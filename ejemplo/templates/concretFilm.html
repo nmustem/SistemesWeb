@@ -1,0 +1,17 @@
+{% block title %}Films - {{ film.title }}{% endblock %}
+
+{% block content %}
+
+<h1>
+    <span property="name">{{ film.title }}</span>
+</h1>
+
+<h2>Datos:</h2>
+<p>
+    {{ film.city }}, {{ film.country }} <br/>
+    {{ film.director.first_name }} {{ film.genre.name }} <br/>
+    {{ film.main_actor }}
+</p>
+
+
+{% endblock %}

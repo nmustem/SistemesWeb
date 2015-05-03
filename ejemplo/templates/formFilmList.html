@@ -1,0 +1,13 @@
+
+{% block content %}
+
+
+<ul>
+    {% for film in film_list %}
+        <li>{{ film.title }}</li>
+    {% empty %}
+        <li>Sorry, no films.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
