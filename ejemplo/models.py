@@ -18,7 +18,7 @@ class Director(models.Model):
         return reverse('film_list', kwargs={'pk': self.pk})
 
 class Genre(models.Model):
-    name = models.CharField(max_length=30,default='n')
+    name = models.CharField(max_length=30)
     description = models.CharField(max_length=60)
 
     def __unicode__(self):

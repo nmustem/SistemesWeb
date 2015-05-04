@@ -96,12 +96,19 @@ def directorList(request):
     return HttpResponse(resp)
 
 
+def directorFilms(request,pk):
+    films = Film.objects.filter(director=pk)
+    t = get_template('formFilmList.html')
+    return HttpResponse(t.render(Context({'film_list':films})))
+
+
 def genreList(request):
     genres = Genre.objects.all()
     t = get_template('GenreList.html')
     resp = t.render(Context({'list_genre':genres}))
     print resp
     return HttpResponse(resp)
+
 
 def top_rated(request):
     pass

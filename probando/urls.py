@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.views.generic import ListView, UpdateView, DeleteView
 from ejemplo.forms import FilmForm
 from ejemplo.models import Film, Genre
-from ejemplo.views import current_datetime,intro_movie,filmList,movies,directorList, FilmDetail,filmGenre, genreList#, filmDirector
+from ejemplo.views import current_datetime,intro_movie,filmList,movies,directorList, FilmDetail,filmGenre, directorFilms, genreList#, filmDirector
 
 urlpatterns = [
     # Examples:
@@ -18,6 +18,8 @@ urlpatterns = [
     #url(r'^film_list/$', filmList, name='film_list'),
     #url(r'^movie/(?P<pk>\d+)/$ ', movies, name='info_film' ),
     url(r'^director/$', directorList, name='director_list' ),
+
+    url(r'^director/(?P<pk>\d+)/$', directorFilms, name='director_list' ),
 
     url(r'^film/$',
         ListView.as_view(
@@ -50,7 +52,7 @@ urlpatterns = [
     #     'ejemplo.views.review',
     #     name='review_create'),
 
-    url(r'^film/genre/(?P<pk>[a-z]+)/$',
+    url(r'^genre/(?P<pk>\d+)/$',
         filmGenre,
         name='film_genre'),
 
