@@ -13,6 +13,8 @@ from django.db.models import Q
 from models import Film,Genre,Director,Review
 from forms import FilmForm
 
+from django.core import serializers
+
 import os
 # Create your views here.
 
@@ -23,30 +25,19 @@ def current_datetime(request):
     html = t.render(Context({ 'current_date' : now , 'cosa' : su}))
     return HttpResponse(html)
 
-'''def current_datetime(request):
-    now = datetime.datetime.now()
-    RUTA_PROYECTO=os.path.dirname(os.path.realpath(__file__))
-    path =  os.path.join(RUTA_PROYECTO, 'templates')
-    html = " <html><body>It is now %s .y el path es path %s</body></html> " % (now,path)
-    return HttpResponse(html)'''
-
-
-def delete_movie(request):
-    pass
-
 #class intro_director()
 
 class intro_review(CreateView):
     pass
 
-def review(request, pk):
-    film = get_object_or_404(Film, pk=pk)
-    new_review = Review(
-        code=film,
-        score=request.POST['score'],
-        description=request.POST['description'])
-    new_review.save()
-    return HttpResponseRedirect(urlresolvers.reverse('ejemplo:film_detail', args=(film.id,)))
+# '''def review(request, pk):
+#     film = get_object_or_404(Film, pk=pk)
+#     new_review = Review(
+#         code=film,
+#         score=request.POST['score'],
+#         description=request.POST['description'])
+#     new_review.save()
+#     return HttpResponseRedirect(urlresolvers.reverse('ejemplo:film_detail', args=(film.id,)))'''
 
 class intro_movie(CreateView):
     model = Film
@@ -67,10 +58,17 @@ def filmGenre(request,pk):
     t = get_template('formFilmList.html')
     return HttpResponse(t.render(Context({'film_list':films})))
 
-'''class FilmGenre(DetailView):
-
-    context_object_name = 'filmForGenre'
-    queryset = Film.objects.get(Genre)'''
+    # def filmDirector(request,pk):
+    # pk = str(pk)
+    # direct = Director.objects.filter(first_name=pk)
+    # director = Film.objects.filter(director=direct.dni)
+    # t = get_template('formFilmList.html')
+    # return HttpResponse(t.render(Context({'film_list':director})))
+    #
+    # class FilmGenre(DetailView):
+    #
+    # context_object_name = 'filmForGenre'
+    # queryset = Film.objects.get(Genre)
 
 def movies(request, pk):
     idd = int(pk)
@@ -91,10 +89,19 @@ class FilmDetail(DetailView):
 
 
 def directorList(request):
-    directors = Film.objects.all()
-    t = get_template('formFilmList.html')
-    return HttpResponse(t.render(Context({'list_director':directors})))
+    directors = Director.objects.all()
+    t = get_template('formDirectorList.html')
+    resp = t.render(Context({'list_director':directors}))
+    print resp
+    return HttpResponse(resp)
 
+
+def genreList(request):
+    genres = Genre.objects.all()
+    t = get_template('GenreList.html')
+    resp = t.render(Context({'list_genre':genres}))
+    print resp
+    return HttpResponse(resp)
 
 def top_rated(request):
     pass

@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'probando.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'database.db',
+        'NAME': 'nova2.db',
 
         'USER': '',
         'PASSWORD': '',

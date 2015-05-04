@@ -1,0 +1,13 @@
+
+{% block content %}
+
+
+<ul>
+    {% for genre in list_genre %}
+        <li>{{ genre.name }}</li>
+    {% empty %}
+        <li>Sorry, no genres.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
