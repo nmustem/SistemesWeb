@@ -7,11 +7,12 @@ from ejemplo.views import directorFilms,filmList,directorList, FilmDetail,GenreD
 urlpatterns = [
     # Examples:
 
-    url(r'^$',mainPage,  name='film_genre'),
+    url(r'^$',mainPage,  name='home'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^login/$', 'django.contrib.auth.views.login'),
 
 
 
