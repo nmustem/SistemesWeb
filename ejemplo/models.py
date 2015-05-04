@@ -3,10 +3,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.timezone import now
 
-
-
-#//////cambiar director_list de reverse
-
 class Director(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=40)
@@ -46,4 +42,3 @@ class Review(models.Model):
 
     def get_absolute_url(self):
         return reverse('film_list', kwargs={'pk': self.pk})
-

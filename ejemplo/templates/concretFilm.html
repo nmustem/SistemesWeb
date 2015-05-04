@@ -6,11 +6,12 @@
     <span property="name">{{ film.title }}</span>
 </h1>
 
-<h2>Datos:</h2>
+<h2>Specification of the film:</h2>
 <p>
     {{ film.city }}, {{ film.country }} <br/>
-    {{ film.director.first_name }} {{ film.genre.name }} <br/>
-    {{ film.main_actor }}
+    Director: {{ film.director.first_name }} {{ film.director.last_name }}	<br/>
+    Genre: {{ film.genre.name }} <br/>
+    Main actor: {{ film.main_actor }}
 </p>
 
 

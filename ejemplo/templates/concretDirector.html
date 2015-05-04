@@ -1,0 +1,18 @@
+{% block title %}Directors - {{ director.first_name }}{% endblock %}
+
+{% block content %}
+
+<h1>
+    <span property="name">{{ director.first_name }}</span>
+</h1>
+
+<h2></h2>
+<p>
+    {{ director.first_name }}, {{ director.last_name }} <br/>
+
+</p>
+
+<a href="/director/{{director.id}}/films"><li>Films of this director </li></a>
+
+
+{% endblock %}

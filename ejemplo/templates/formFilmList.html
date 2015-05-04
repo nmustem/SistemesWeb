@@ -3,8 +3,9 @@
 
 
 <ul>
+    <p>FILMS</p>
     {% for film in film_list %}
-        <li>{{ film.title }}</li>
+        <a href="/film/{{film.id}}"><li>{{ film.title }}</li></a>
     {% empty %}
         <li>Sorry, no films.</li>
     {% endfor %}

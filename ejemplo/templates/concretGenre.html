@@ -1,0 +1,17 @@
+{% block title %}Genres - {{ genre.name }}{% endblock %}
+
+{% block content %}
+
+<h1>
+    <span property="name">{{ genre.name }}</span>
+</h1>
+
+<h2>Datos:</h2>
+<p>
+    {{ genre.name }}, {{ genre.description }} <br/>
+</p>
+
+
+<a href="/genre/{{genre.id}}/films"><li>Films of this genre </li></a>
+
+{% endblock %}

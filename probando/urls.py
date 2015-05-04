@@ -1,65 +1,95 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import ListView, UpdateView, DeleteView
-from ejemplo.forms import FilmForm
-from ejemplo.models import Film, Genre
-from ejemplo.views import current_datetime,intro_movie,filmList,movies,directorList, FilmDetail,filmGenre, directorFilms, genreList#, filmDirector
+from ejemplo.views import directorFilms,filmList,directorList, FilmDetail,GenreDetail,DirectorDetail,filmGenre,genreList, \
+    mainPage
 
 urlpatterns = [
     # Examples:
-    # url(r'^$', 'probando.views.home', name='home'),
+
+    url(r'^$',mainPage,  name='film_genre'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^time/$' , current_datetime),
-    url(r'^intro/$',
-        intro_movie.as_view(),
-        name='film_intro'),
-    #url(r'^film_list/$', filmList, name='film_list'),
+
+
+
+
+
+    # url(r'^intro/$',
+    #     intro_movie.as_view(),
+    #     name='film_intro'),
+
     #url(r'^movie/(?P<pk>\d+)/$ ', movies, name='info_film' ),
-    url(r'^director/$', directorList, name='director_list' ),
 
-    url(r'^director/(?P<pk>\d+)/$', directorFilms, name='director_list' ),
-
+    #FILM
     url(r'^film/$',
-        ListView.as_view(
-            queryset=Film.objects.all(),
-            context_object_name='film_list',
-            template_name='formFilmList.html'),
+        filmList.as_view(),
         name='film_list'),
+
+    url(r'^film\.(?P<extension>(json|xml))$',
+        filmList.as_view(),
+        name='film_list_extension'),
 
     url(r'^film/(?P<pk>\d+)/$',
         FilmDetail.as_view(),
         name='film_detail'),
 
-
-    url(r'^film/(?P<pk>\d+)/delete$',
-        DeleteView.as_view(
-        model=Film,
-        template_name='film_confirm_delete.html',
-        #success_url=
-        ), name='delete_film'),
-
-    url(r'^film/(?P<pk>\d+)/edit/$',
-        UpdateView.as_view(
-            model=Film,
-            form_class=FilmForm,
-            template_name='form.html'),
-        name='restaurant_edit'),
+    url(r'^film/(?P<pk>\d+)\.(?P<extension>(json|xml))$$',
+        FilmDetail.as_view(),
+        name='film_detail_extension'),
 
 
-    # url(r'^film/(?P<pk>\d+)/reviews/create/$',
-    #     'ejemplo.views.review',
-    #     name='review_create'),
+
+    #DIRECTOR
+    url(r'^director/$',
+        directorList.as_view(),
+        name='director_list' ),
+
+    url(r'^director\.(?P<extension>(json|xml))$',
+        directorList.as_view(),
+        name='director_list_extension' ),
+
+    url(r'^director/(?P<pk>\d+)/$',
+        DirectorDetail.as_view(),
+        name='director_detail',
+        ),
+
+    url(r'^director/(?P<pk>\d+)\.(?P<extension>(json|xml))$',
+        DirectorDetail.as_view(),
+        name='director_detail_extension',
+        ),
+
+    url(r'^director/(?P<pk>\d+)/films/$',
+        directorFilms,
+        name='director_list_films' ),
+
+
+
+    ##GENRE
+    url(r'^genre/$',
+        genreList.as_view(),
+        name='genre_list',
+        ),
+
+    url(r'^genre\.(?P<extension>(json|xml))$',
+        genreList.as_view(),
+        name='genre_list_extension',
+        ),
 
     url(r'^genre/(?P<pk>\d+)/$',
+        GenreDetail.as_view(),
+        name='genre_detail',
+        ),
+
+    url(r'^genre/(?P<pk>\d+)\.(?P<extension>(json|xml))$',
+        GenreDetail.as_view(),
+        name='genre_detail_extension',
+        ),
+
+    url(r'^genre/(?P<pk>\d+)/films/$',
         filmGenre,
         name='film_genre'),
 
-    url(r'^genre/$', genreList , name='genre_list' ),
-
-    # url(r'^film/director/(?P<pk>[a-zA-Z]+)/$',
-    #     filmDirector,
-    #     name='film_director'),
 
 ]

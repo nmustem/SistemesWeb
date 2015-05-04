@@ -3,8 +3,9 @@
 
 
 <ul>
+    <p>GENRES</p>
     {% for genre in list_genre %}
-        <li>{{ genre.name }}</li>
+        <a href="/genre/{{genre.id}}"><li>{{ genre.name }}</li></a>
     {% empty %}
         <li>Sorry, no genres.</li>
     {% endfor %}

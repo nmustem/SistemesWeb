@@ -4,7 +4,8 @@ from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse, HttpResponseRedirect
 import datetime
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
+from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import CreateView
 from django.template import Template
 
@@ -18,12 +19,28 @@ from django.core import serializers
 import os
 # Create your views here.
 
-def current_datetime(request):
-    now = datetime.datetime.now()
-    t = get_template( 'template2.html' )
-    su = ["cosa1","cosa2"]
-    html = t.render(Context({ 'current_date' : now , 'cosa' : su}))
-    return HttpResponse(html)
+class ConnegResponseMixin(TemplateResponseMixin):
+
+    def render_json_object_response(self, objects, **kwargs):
+        json_data = serializers.serialize(u"json", objects, **kwargs)
+        return HttpResponse(json_data, content_type=u"application/json")
+
+    def render_xml_object_response(self, objects, **kwargs):
+        xml_data = serializers.serialize(u"xml", objects, **kwargs)
+        return HttpResponse(xml_data, content_type=u"application/xml")
+
+    def render_to_response(self, context, **kwargs):
+        if 'extension' in self.kwargs:
+            try:
+                objects = [self.object]
+            except AttributeError:
+                objects = self.object_list
+            if self.kwargs['extension'] == 'json':
+                return self.render_json_object_response(objects=objects)
+            elif self.kwargs['extension'] == 'xml':
+                return self.render_xml_object_response(objects=objects)
+        else:
+            return super(ConnegResponseMixin, self).render_to_response(context)
 
 #class intro_director()
 
@@ -48,13 +65,29 @@ class intro_movie(CreateView):
         form.instance.user = self.request.user
         return super(intro_movie, self).form_valid(form)
 
-def filmList(request):
-    films = Film.objects.all()
-    t = get_template('formFilmList.html')
-    return HttpResponse(t.render(Context({'film_list':films})))
+
+# def filmList(request):
+#     films = Film.objects.all()
+#     t = get_template('formFilmList.html')
+#     return HttpResponse(t.render(Context({'film_list':films})))
+
+def mainPage(request):
+    t = get_template('mainPage.html')
+    return HttpResponse(t.render(Context({})))
+
+class filmList(ListView, ConnegResponseMixin):
+    model = Film
+    queryset = Film.objects.all()
+    context_object_name = 'film_list'
+    template_name = 'formFilmList.html'
 
 def filmGenre(request,pk):
     films = Film.objects.filter(genre=pk)
+    t = get_template('formFilmList.html')
+    return HttpResponse(t.render(Context({'film_list':films})))
+
+def directorFilms(request,pk):
+    films = Film.objects.filter(director=pk)
     t = get_template('formFilmList.html')
     return HttpResponse(t.render(Context({'film_list':films})))
 
@@ -70,47 +103,63 @@ def filmGenre(request,pk):
     # context_object_name = 'filmForGenre'
     # queryset = Film.objects.get(Genre)
 
-def movies(request, pk):
-    idd = int(pk)
-    f = Film.objects.filter(Country='EEUU')
-    t = get_template('concretFilm.html')
-    return HttpResponse(t.render(Context({'cfilmf':f})))
+# def movies(request, pk):
+#     idd = int(pk)
+#     f = Film.objects.filter(Country='EEUU')
+#     t = get_template('concretFilm.html')
+#     return HttpResponse(t.render(Context({'cfilmf':f})))
 
-class FilmDetail(DetailView):
+class FilmDetail(DetailView, ConnegResponseMixin):
     model = Film
     template_name = 'concretFilm.html'
 
     def get_context_data(self, **kwargs):
         context = super(FilmDetail, self).get_context_data(**kwargs)
-        #context['RATING_CHOICES'] = RestaurantReview.RATING_CHOICES
+        return context
+
+class GenreDetail(DetailView, ConnegResponseMixin):
+    model = Genre
+    template_name = 'concretGenre.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GenreDetail, self).get_context_data(**kwargs)
+        return context
+
+class DirectorDetail(DetailView, ConnegResponseMixin):
+    model = Director
+    template_name = 'concretDirector.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DirectorDetail, self).get_context_data(**kwargs)
         return context
 
 
 
+# def directorList(request, ConnegResponseMixin):
+#     directors = Director.objects.all()
+#     t = get_template('formDirectorList.html')
+#     resp = t.render(Context({'list_director':directors}))
+#     print resp
+#     return HttpResponse(resp)
 
-def directorList(request):
-    directors = Director.objects.all()
-    t = get_template('formDirectorList.html')
-    resp = t.render(Context({'list_director':directors}))
-    print resp
-    return HttpResponse(resp)
+class directorList(ListView, ConnegResponseMixin):
+    model = Film
+    queryset = Director.objects.all()
+    context_object_name = 'list_director'
+    template_name = 'formDirectorList.html'
 
 
-def directorFilms(request,pk):
-    films = Film.objects.filter(director=pk)
-    t = get_template('formFilmList.html')
-    return HttpResponse(t.render(Context({'film_list':films})))
+class genreList(ListView, ConnegResponseMixin):
+    model = Genre
+    queryset = Genre.objects.all()
+    context_object_name = 'list_genre'
+    template_name = 'GenreList.html'
 
-
-def genreList(request):
-    genres = Genre.objects.all()
-    t = get_template('GenreList.html')
-    resp = t.render(Context({'list_genre':genres}))
-    print resp
-    return HttpResponse(resp)
-
+# def genreList(request, ConnegResponseMixin):
+#     genres = Genre.objects.all()
+#     t = get_template('GenreList.html')
+#     resp = t.render(Context({'list_genre':genres}))
+#     return HttpResponse(resp)
 
 def top_rated(request):
     pass
-
-

@@ -2,13 +2,14 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>Directors</title>
 </head>
 <body>
+    <p>DIRECTORS</p>
 
 <ul>
     {% for director in list_director %}
-    <li>{{ director.id }} {{ director.first_name }} </li>
+     <a href="/director/{{director.id}}"><li>{{ director.id }} {{ director.first_name }} {{ director.last_name }}</li></a>
     {% endfor %}
 
 </ul>
