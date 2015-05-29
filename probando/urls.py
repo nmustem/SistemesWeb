@@ -1,8 +1,9 @@
-from django.conf.urls import include, url
+from django.conf.urls import include, url, patterns
 from django.contrib import admin
 from django.views.generic import ListView, UpdateView, DeleteView
+from rest_framework.urlpatterns import format_suffix_patterns
 from ejemplo.views import directorFilms,filmList,directorList, FilmDetail,GenreDetail,DirectorDetail,filmGenre,genreList, \
-    mainPage
+    mainPage,intro_movie,APIFilmList,APIFilmDetail,APIDirectorDetail,APIDirectorList, APIGenreList, APIGenreDetail,register, CreateModelMixin
 
 urlpatterns = [
     # Examples:
@@ -13,13 +14,15 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^login/$', 'django.contrib.auth.views.login'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout'),
+    url(r'^register/$',
+        register,
+        name='register'),
 
 
-
-
-    # url(r'^intro/$',
-    #     intro_movie.as_view(),
-    #     name='film_intro'),
+    url(r'^intro/$',
+        intro_movie.as_view(),
+        name='film_intro'),
 
     #url(r'^movie/(?P<pk>\d+)/$ ', movies, name='info_film' ),
 
@@ -94,3 +97,18 @@ urlpatterns = [
 
 
 ]
+
+##########API URLS
+urlpatterns += patterns('',
+	url(r'^api/auth/', include('rest_framework.urls', namespace='rest_framework')),
+	url(r'^api/films/$', APIFilmList.as_view(), name='film-list'),
+    url(r'^api/films/(?P<pk>\d+)/$', APIFilmDetail.as_view(), name='film-detail'),
+    url(r'^api/directors/$',APIDirectorList.as_view(),name='director-list'),
+    url(r'^api/directors/(?P<pk>\d+)/$',APIDirectorDetail.as_view(),name='director-detail'),
+    url(r'^api/genres/$' ,APIGenreList.as_view(), name='genre-list'),
+    url(r'^api/genres/(?P<pk>\d+)/$',APIGenreDetail.as_view(),name='genre-detail'),
+    url(r'^p/create/$',CreateModelMixin.as_view(),name='gcreate')
+)
+
+# Format suffixes
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['api','json', 'xml'])

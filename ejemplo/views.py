@@ -1,20 +1,36 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.core import urlresolvers
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse, HttpResponseRedirect
 import datetime
+from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import CreateView
 from django.template import Template
 
 from django.db.models import Q
+from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.settings import api_settings
+from ejemplo.serializers import UserSerializer,FilmSerializer, DirectorSerializer, GenreSerializer
+from rest_framework import generics, permissions
+from django.views.generic.edit import CreateView, UpdateView
 
 from models import Film,Genre,Director,Review
 from forms import FilmForm
 
 from django.core import serializers
+
+from rest_framework import status
 
 import os
 # Create your views here.
@@ -43,6 +59,63 @@ class ConnegResponseMixin(TemplateResponseMixin):
             return super(ConnegResponseMixin, self).render_to_response(context)
 
 #class intro_director()
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    """
+    The entry endpoint of our API
+    """
+    return Response({
+        'users': reverse('user-list', vrequest=request),
+        'groups': reverse('group-list', request=request),
+    })
+
+
+class UserList(generics.ListCreateAPIView):
+    """
+      API endpoint that	represents a list of users
+    """
+    queryset = User.objects.all()
+    model = User
+    serializer_class = UserSerializer
+
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
+
+
+class CheckIsOwnerMixin(object):
+    def get_object(self, *args, **kwargs):
+        obj = super(CheckIsOwnerMixin, self).get_object(*args, **kwargs)
+        if not obj.user == self.request.user:
+            raise PermissionDenied
+        return obj
+
+class LoginRequiredCheckIsOwnerUpdateView(LoginRequiredMixin, CheckIsOwnerMixin, UpdateView):
+    template_name = 'myrestaurants/form.html'
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Instance must have an attribute named `owner`.
+        return obj.user == request.user
+
+# @login_required()                                         ejemplo de pedir login para hacer algo!!!!!!!!!!!!!!!!!!
+# def review(request, pk):
+#     restaurant = get_object_or_404(Restaurant, pk=pk)
+#     new_review = RestaurantReview(
+#         rating=request.POST['rating'],
+#         comment=request.POST['comment'],
+#         user=request.user,
+#         restaurant=restaurant)
+#     new_review.save()
+#     return HttpResponseRedirect(urlresolvers.reverse('myrestaurants:restaurant_detail', args=(restaurant.id,)))
 
 class intro_review(CreateView):
     pass
@@ -163,3 +236,75 @@ class genreList(ListView, ConnegResponseMixin):
 
 def top_rated(request):
     pass
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            return HttpResponseRedirect("/")
+    else:
+        form = UserCreationForm()
+    return render(request, "registration/register.html", {
+        'form': form,
+    })
+
+#RESTful API views
+
+class CreateModelMixin(object):
+    """
+    Create a model instance.
+    """
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def get_success_headers(self, data):
+        try:
+            return {'Location': data[api_settings.URL_FIELD_NAME]}
+        except (TypeError, KeyError):
+            return {}
+
+class APIFilmList(generics.ListCreateAPIView):
+    #permission_classes = (IsOwnerOrReadOnly,)
+    model = Film
+    queryset = Film.objects.all()
+    serializer_class = FilmSerializer
+
+class APIFilmDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    model = Film
+    queryset = Film.objects.all()
+    serializer_class = FilmSerializer
+
+class APIDirectorList(generics.ListCreateAPIView):
+    #permissions_classes = (IsOwnerOrReadOnly,)
+    model = Director
+    queryset = Director.objects.all()
+    serializer_class = DirectorSerializer
+
+class APIDirectorDetail(generics.RetrieveUpdateDestroyAPIView):
+    #permissions_classes = (IsOwnerOrReadOnly,)
+    model = Director
+    queryset = Director.objects.all()
+    serializer_class = DirectorSerializer
+
+class APIGenreList(generics.ListAPIView):
+    #permissions_classes = (IsOwnerOrReadOnly,)
+    model = Genre
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+class APIGenreDetail(generics.RetrieveAPIView):
+    #permissions_classes = (IsOwnerOrReadOnly,)
+    model = Genre
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+
