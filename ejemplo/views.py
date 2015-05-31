@@ -307,4 +307,13 @@ class APIGenreDetail(generics.RetrieveAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
 
+class FilmCreate(generics.CreateAPIView):
+    model = Film
+    template_name = 'form.html'
+    form_class = FilmForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(FilmCreate, self).form_valid(form)
+
 
