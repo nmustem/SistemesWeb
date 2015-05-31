@@ -17,7 +17,7 @@ from django.db.models import Q
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly, BasePermission
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
@@ -25,7 +25,7 @@ from ejemplo.serializers import UserSerializer,FilmSerializer, DirectorSerialize
 from rest_framework import generics, permissions
 from django.views.generic.edit import CreateView, UpdateView
 
-from models import Film,Genre,Director,Review
+from models import Film,Genre,Director
 from forms import FilmForm
 
 from django.core import serializers
@@ -95,30 +95,9 @@ class CheckIsOwnerMixin(object):
 class LoginRequiredCheckIsOwnerUpdateView(LoginRequiredMixin, CheckIsOwnerMixin, UpdateView):
     template_name = 'myrestaurants/form.html'
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
 
-    def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        # Instance must have an attribute named `owner`.
-        return obj.user == request.user
-
-# @login_required()                                         ejemplo de pedir login para hacer algo!!!!!!!!!!!!!!!!!!
-# def review(request, pk):
-#     restaurant = get_object_or_404(Restaurant, pk=pk)
-#     new_review = RestaurantReview(
-#         rating=request.POST['rating'],
-#         comment=request.POST['comment'],
-#         user=request.user,
-#         restaurant=restaurant)
-#     new_review.save()
-#     return HttpResponseRedirect(urlresolvers.reverse('myrestaurants:restaurant_detail', args=(restaurant.id,)))
-
-class intro_review(CreateView):
-    pass
+# class intro_review(CreateView):
+#     pass
 
 # '''def review(request, pk):
 #     film = get_object_or_404(Film, pk=pk)
@@ -251,69 +230,53 @@ def register(request):
 
 #RESTful API views
 
-class CreateModelMixin(object):
-    """
-    Create a model instance.
-    """
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+class IsOwnerOrReadOnly(permissions.BasePermission):
 
-    def perform_create(self, serializer):
-        serializer.save()
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in permissions.SAFE_METHODS:
+            return True
 
-    def get_success_headers(self, data):
-        try:
-            return {'Location': data[api_settings.URL_FIELD_NAME]}
-        except (TypeError, KeyError):
-            return {}
+        # Instance must have an attribute named `owner`.
+        return obj.user == request.user
+
 
 class APIFilmList(generics.ListCreateAPIView):
-    #permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     model = Film
     queryset = Film.objects.all()
+
     serializer_class = FilmSerializer
 
 class APIFilmDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
     model = Film
     queryset = Film.objects.all()
     serializer_class = FilmSerializer
 
 class APIDirectorList(generics.ListCreateAPIView):
-    #permissions_classes = (IsOwnerOrReadOnly,)
+    permissions_classes = (IsAuthenticatedOrReadOnly,)
     model = Director
     queryset = Director.objects.all()
     serializer_class = DirectorSerializer
 
 class APIDirectorDetail(generics.RetrieveUpdateDestroyAPIView):
-    #permissions_classes = (IsOwnerOrReadOnly,)
+    permissions_classes = (IsAuthenticatedOrReadOnly,)
     model = Director
     queryset = Director.objects.all()
     serializer_class = DirectorSerializer
 
 class APIGenreList(generics.ListAPIView):
-    #permissions_classes = (IsOwnerOrReadOnly,)
+    permissions_classes = (IsAuthenticatedOrReadOnly,)
     model = Genre
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
 
 class APIGenreDetail(generics.RetrieveAPIView):
-    #permissions_classes = (IsOwnerOrReadOnly,)
+    permissions_classes = (IsAuthenticatedOrReadOnly,)
     model = Genre
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-
-class FilmCreate(generics.CreateAPIView):
-    model = Film
-    template_name = 'form.html'
-    form_class = FilmForm
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super(FilmCreate, self).form_valid(form)
 
 

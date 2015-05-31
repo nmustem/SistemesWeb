@@ -3,8 +3,7 @@ from django.contrib import admin
 from django.views.generic import ListView, UpdateView, DeleteView
 from rest_framework.urlpatterns import format_suffix_patterns
 from ejemplo.views import directorFilms,filmList,directorList, FilmDetail,GenreDetail,DirectorDetail,filmGenre,genreList, \
-    mainPage,intro_movie,APIFilmList,APIFilmDetail,APIDirectorDetail,APIDirectorList, APIGenreList, APIGenreDetail,register, \
-    FilmCreate
+    mainPage,intro_movie,APIFilmList,APIFilmDetail,APIDirectorDetail,APIDirectorList, APIGenreList, APIGenreDetail,register
 
 urlpatterns = [
     # Examples:
@@ -108,8 +107,6 @@ urlpatterns += patterns('',
     url(r'^api/directors/(?P<pk>\d+)/$',APIDirectorDetail.as_view(),name='director-detail'),
     url(r'^api/genres/$' ,APIGenreList.as_view(), name='genre-list'),
     url(r'^api/genres/(?P<pk>\d+)/$',APIGenreDetail.as_view(),name='genre-detail'),
-    #url(r'^p/create/$',CreateModelMixin.as_view(),name='gcreate')
-    url(r'^api/films/create/$', FilmCreate.as_view(),name='film-create'),
 )
 
 # Format suffixes
