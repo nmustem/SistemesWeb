@@ -3,7 +3,8 @@ from django.contrib import admin
 from django.views.generic import ListView, UpdateView, DeleteView
 from rest_framework.urlpatterns import format_suffix_patterns
 from ejemplo.views import directorFilms,filmList,directorList, FilmDetail,GenreDetail,DirectorDetail,filmGenre,genreList, \
-    mainPage,intro_movie,APIFilmList,APIFilmDetail,APIDirectorDetail,APIDirectorList, APIGenreList, APIGenreDetail,register
+    mainPage,intro_movie,APIFilmList,APIFilmDetail,APIDirectorDetail,APIDirectorList, APIGenreList, APIGenreDetail,register, \
+    review
 
 urlpatterns = [
     # Examples:
@@ -18,11 +19,6 @@ urlpatterns = [
     url(r'^register/$',
         register,
         name='register'),
-
-
-    url(r'^intro/$',
-        intro_movie.as_view(),
-        name='film_intro'),
 
     #url(r'^movie/(?P<pk>\d+)/$ ', movies, name='info_film' ),
 
@@ -42,6 +38,10 @@ urlpatterns = [
     url(r'^film/(?P<pk>\d+)\.(?P<extension>(json|xml))$$',
         FilmDetail.as_view(),
         name='film_detail_extension'),
+
+    url(r'^film/(?P<pk>\d+)/reviews/create/$',
+        review,
+        name='review_create'),
 
 
 
@@ -94,6 +94,14 @@ urlpatterns = [
     url(r'^genre/(?P<pk>\d+)/films/$',
         filmGenre,
         name='film_genre'),
+
+
+
+
+
+    url(r'^films/intro$',
+        intro_movie.as_view(),
+        name='film-intro'),
 
 
 ]

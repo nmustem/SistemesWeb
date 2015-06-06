@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth.models import User
+from datetime import date
 
 class Director(models.Model):
     first_name = models.CharField(max_length=30)
@@ -39,10 +40,15 @@ class Film(models.Model):
     def get_absolute_url(self):
         return reverse('film-detail', kwargs={'pk': self.pk})
 
-# class Review(models.Model):
-#     film = models.ForeignKey(Film)
-#     score = models.IntegerField
-#     description = models.CharField(max_length=200)
-#
-#     def get_absolute_url(self):
-#         return reverse('film_list', kwargs={'pk': self.pk})
+class Review(models.Model):
+    RATING_CHOICES = ((1,'1'),(2,'2'),(3,'3'),(4,'4'))
+    rating = models.PositiveSmallIntegerField('Ratings (stars)', blank=False, default=3, choices=RATING_CHOICES)
+    comment = models.TextField(blank=True, null=True)
+    user = models.ForeignKey(User, default=1)
+    date = models.DateField(default=date.today)
+
+    class Meta:
+        abstract = True
+
+class FilmReview(Review):
+    film = models.ForeignKey(Film)

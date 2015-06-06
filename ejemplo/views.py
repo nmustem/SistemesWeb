@@ -25,7 +25,7 @@ from ejemplo.serializers import UserSerializer,FilmSerializer, DirectorSerialize
 from rest_framework import generics, permissions
 from django.views.generic.edit import CreateView, UpdateView
 
-from models import Film,Genre,Director
+from models import Film,Genre,Director, FilmReview
 from forms import FilmForm
 
 from django.core import serializers
@@ -216,6 +216,17 @@ class genreList(ListView, ConnegResponseMixin):
 def top_rated(request):
     pass
 
+@login_required()
+def review(request, pk):
+    film = get_object_or_404(Film, pk=pk)
+    new_review = FilmReview(
+        rating=request.POST['rating'],
+        comment=request.POST['comment'],
+        user=request.user,
+        film= film)
+    new_review.save()
+    return HttpResponseRedirect(urlresolvers.reverse('film_detail', args=(film.id,)))
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -278,5 +289,6 @@ class APIGenreDetail(generics.RetrieveAPIView):
     model = Genre
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+
 
 
