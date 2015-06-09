@@ -42,7 +42,7 @@ class Film(models.Model):
 
 class Review(models.Model):
     RATING_CHOICES = ((1,'1'),(2,'2'),(3,'3'),(4,'4'))
-    rating = models.PositiveSmallIntegerField('Ratings (stars)', blank=False, default=3, choices=RATING_CHOICES)
+    rating = models.PositiveSmallIntegerField('Ratings (stars)', blank=False, default=2, choices=RATING_CHOICES)
     comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, default=1)
     date = models.DateField(default=date.today)
@@ -52,3 +52,6 @@ class Review(models.Model):
 
 class FilmReview(Review):
     film = models.ForeignKey(Film)
+
+    def __unicode__(self):
+        return u"%s" % self.film

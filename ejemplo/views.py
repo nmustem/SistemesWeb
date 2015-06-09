@@ -21,7 +21,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthentic
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
-from ejemplo.serializers import UserSerializer,FilmSerializer, DirectorSerializer, GenreSerializer
+from ejemplo.serializers import UserSerializer,FilmSerializer, DirectorSerializer, GenreSerializer, FilmReviewSerializer
 from rest_framework import generics, permissions
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -167,6 +167,7 @@ class FilmDetail(DetailView, ConnegResponseMixin):
 
     def get_context_data(self, **kwargs):
         context = super(FilmDetail, self).get_context_data(**kwargs)
+        context['RATING_CHOICES'] = FilmReview.RATING_CHOICES
         return context
 
 class GenreDetail(DetailView, ConnegResponseMixin):
@@ -220,7 +221,7 @@ def top_rated(request):
 def review(request, pk):
     film = get_object_or_404(Film, pk=pk)
     new_review = FilmReview(
-        rating=request.POST['rating'],
+        rating=request.POST['rating'], #peta
         comment=request.POST['comment'],
         user=request.user,
         film= film)
@@ -289,6 +290,22 @@ class APIGenreDetail(generics.RetrieveAPIView):
     model = Genre
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+
+class APIFilmReviewList(generics.ListCreateAPIView):
+    permission_classes = (IsOwnerOrReadOnly,)
+    model = FilmReview
+    queryset = FilmReview.objects.all()
+    serializer_class = FilmReviewSerializer
+
+class APIFilmReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsOwnerOrReadOnly,)
+    model = FilmReview
+    queryset = FilmReview.objects.all()
+    serializer_class = FilmReviewSerializer
+
+
+
+
 
 
 
