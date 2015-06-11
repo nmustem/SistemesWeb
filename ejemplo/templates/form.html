@@ -1,6 +1,26 @@
+{% extends "base.html" %}
 {% load staticfiles %}
 
 {% block content %}
+<head>
+<link
+  rel="stylesheet"
+  href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+<script
+  src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script
+  src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+<script>
+        $(function() {
+            $.getJSON("{% static "countries.json" %}", {}, function (countries) {
+                $("#id_country").autocomplete({
+                    source: countries
+                });
+            });
+
+        });
+    </script>
 
 
     <form method="post" enctype="multipart/form-data" action="">
@@ -10,5 +30,12 @@
         </table>
         <input type="submit" value="Enviar"/>
     </form>
+
+    <div id="footer">
+    {% block footer %}
+        <a href="/film/intro"><p>New Film</p></a>
+        <a href="/director/intro"><p>New Director</p></a>
+    {% endblock %}
+    </div>
 
 {% endblock %}

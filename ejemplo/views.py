@@ -26,7 +26,7 @@ from rest_framework import generics, permissions
 from django.views.generic.edit import CreateView, UpdateView
 
 from models import Film,Genre,Director, FilmReview
-from forms import FilmForm
+from forms import FilmForm, DirectorForm
 
 from django.core import serializers
 
@@ -93,7 +93,7 @@ class CheckIsOwnerMixin(object):
         return obj
 
 class LoginRequiredCheckIsOwnerUpdateView(LoginRequiredMixin, CheckIsOwnerMixin, UpdateView):
-    template_name = 'myrestaurants/form.html'
+    template_name = 'form.html'
 
 
 # class intro_review(CreateView):
@@ -112,6 +112,15 @@ class intro_movie(CreateView):
     model = Film
     template_name = 'form.html'
     form_class = FilmForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(intro_movie, self).form_valid(form)
+
+class intro_director(CreateView):
+    model = Director
+    template_name = 'form.html'
+    form_class = DirectorForm
 
     def form_valid(self, form):
         form.instance.user = self.request.user

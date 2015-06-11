@@ -4,7 +4,7 @@ from django.views.generic import ListView, UpdateView, DeleteView
 from rest_framework.urlpatterns import format_suffix_patterns
 from ejemplo.views import directorFilms,filmList,directorList, FilmDetail,GenreDetail,DirectorDetail,filmGenre,genreList, \
     mainPage,intro_movie,APIFilmList,APIFilmDetail,APIDirectorDetail,APIDirectorList, APIGenreList, APIGenreDetail,register, \
-    review, APIFilmReviewList, APIFilmReviewDetail
+    review, APIFilmReviewList, APIFilmReviewDetail, intro_director
 
 urlpatterns = [
     # Examples:
@@ -99,9 +99,13 @@ urlpatterns = [
 
 
 
-    url(r'^films/intro$',
+    url(r'^film/intro$',
         intro_movie.as_view(),
         name='film-intro'),
+
+    url(r'^director/intro$',
+        intro_director.as_view(),
+        name='director-intro'),
 
 
 ]
