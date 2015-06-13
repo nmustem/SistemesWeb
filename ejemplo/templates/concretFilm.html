@@ -7,12 +7,20 @@
     <span property="name">{{ film.title }}</span>
 </h1>
 
+
 <h2>Specification of the film:</h2>
 <p>
-    {{ film.city }}, {{ film.country }} <br/>
-    Director: {{ film.director.first_name }} {{ film.director.last_name }}	<br/>
-    Genre: {{ film.genre.name }} <br/>
-    Main actor: {{ film.main_actor }}
+    <span  typeof="AdministrativeArea">
+        <span property="City">{{ film.city }} </span>, <span property="Country">{{ film.country }}</span> <br/>
+    </span>
+
+   <span typeof="CreativeWork">
+       <span typeof="Movie">
+            Director: <span property="director">{{ film.director.first_name }} {{ film.director.last_name }} </span>	<br/>
+            Main actor: <span property="actor"> {{ film.main_actor }} </span>
+       </span>
+       Genre: <span property="genre"> {{ film.genre.name }} </span> <br/>
+    </span>
 </p>
 
 
@@ -46,9 +54,9 @@
         </li>
     {% endfor %}
 </ul>
-</span>
-{% endif %}
 
+{% endif %}
+<span rel="addreview">
 <h3>Add Review</h3>
 <form action="{% url 'review_create' film.id %}" method="post">
     {% csrf_token %}
@@ -62,7 +70,7 @@
     </p>
     <input type="submit" value="Review" />
 </form>
-
+</span>
 
 
 
