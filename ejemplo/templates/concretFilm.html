@@ -35,9 +35,8 @@
 
 
 <ul rel="review">
-<span vocab="http://schema.org/" rel="review" typeof="Review">
     {% for review in film.filmreview_set.all %}
-        <li typeof="Review">
+        <li vocab="http://schema.org/" typeof="Review">
             <span rel="reviewRating" typeof="Rating">
                 <span property="worstRating" content="{{ RATING_CHOICES.0.0 }}"></span>
                 <span property="ratingValue">{{ review.rating }}</span> star{{ review.rating|pluralize }}
@@ -50,7 +49,7 @@
                 <span property="datePublished">{{ review.date}}</span></p>
         </li>
     {% endfor %}
-</span>
+
 </ul>
 
 {% endif %}
