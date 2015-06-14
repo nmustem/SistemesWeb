@@ -25,7 +25,7 @@
 
 </p>
 
-</span>
+
 
 
 
@@ -34,7 +34,7 @@
 {% if film.filmreview_set.all|length > 0 %}
 <span rel="aggregateRating">
     <p vocab="http://schema.org/" typeof="AggregateRating">
-        Average rating <span property="ratingValue">{{ film.averageRating|stringformat:".1f" }}</span>
+        Average rating <span property="ratingValue">{{ restaurant.averageRating|stringformat:".1f" }}</span>
         {% with film.filmreview_set.all|length as reviewCount %}
         from <span property="reviewCount">{{ reviewCount }}</span> review{{ reviewCount|pluralize }}
         {% endwith %}
@@ -79,6 +79,6 @@
 
 
 
-
+</span>
 
 {% endblock %}
